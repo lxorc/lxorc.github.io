@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Flume," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="配置文件123456789101112131415161718192021# Name the components on this agenta1.sources = r1a1.sinks = k1a1.channels = c1# Describe/configure the sourcea1.sources.r1.type = netcata1.sources.r1.bind = local">
+<meta name="keywords" content="Flume">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flume 拦截器的使用">
+<meta property="og:url" content="http://yoursite.com/2018/07/16/Flume拦截器的使用/index.html">
+<meta property="og:site_name" content="Kami little">
+<meta property="og:description" content="配置文件123456789101112131415161718192021# Name the components on this agenta1.sources = r1a1.sinks = k1a1.channels = c1# Describe/configure the sourcea1.sources.r1.type = netcata1.sources.r1.bind = local">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-07-16T12:38:58.395Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Flume 拦截器的使用">
+<meta name="twitter:description" content="配置文件123456789101112131415161718192021# Name the components on this agenta1.sources = r1a1.sinks = k1a1.channels = c1# Describe/configure the sourcea1.sources.r1.type = netcata1.sources.r1.bind = local">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/07/16/Flume拦截器的使用/"/>
+
+
+
+
+
+  <title>Flume 拦截器的使用 | Kami little</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Kami little</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/16/Flume拦截器的使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Kami">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Kami little">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Flume 拦截器的使用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-16T20:36:15+08:00">
+                2018-07-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/教程/" itemprop="url" rel="index">
+                    <span itemprop="name">教程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"># Name the components on this agent</span><br><span class="line">a1.sources = r1</span><br><span class="line">a1.sinks = k1</span><br><span class="line">a1.channels = c1</span><br><span class="line"># Describe/configure the source</span><br><span class="line">a1.sources.r1.type = netcat</span><br><span class="line">a1.sources.r1.bind = localhost</span><br><span class="line">a1.sources.r1.port = 44444</span><br><span class="line"># Describe the sink</span><br><span class="line">a1.sinks.k1.type = logger</span><br><span class="line"># Use a channel which buffers events in memory</span><br><span class="line">a1.channels.c1.type = memory</span><br><span class="line">a1.channels.c1.capacity = 1000</span><br><span class="line">a1.channels.c1.transactionCapacity = 100</span><br><span class="line"># Bind the source and sink to the channel</span><br><span class="line">a1.sources.r1.channels = c1</span><br><span class="line">a1.sinks.k1.channel = c1</span><br><span class="line">// 启动</span><br><span class="line">bin/flume-ng agent -c conf/ -f conf/netcat_memory_logger.conf -n a1 -Dflume.root.logger=INFO,console</span><br><span class="line">// 输入端</span><br><span class="line">telnet localhost 4455</span><br></pre></td></tr></table></figure>
+<h2 id="Interceptor-使用案例"><a href="#Interceptor-使用案例" class="headerlink" title="Interceptor 使用案例"></a>Interceptor 使用案例</h2><h3 id="Host-interceptor"><a href="#Host-interceptor" class="headerlink" title="Host interceptor"></a>Host interceptor</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">a1.sources.r1.interceptors.i1.type = host</span><br><span class="line">#参数为true时用IP192.168.8.71，参数为false时用主机名h71，默认为true</span><br><span class="line">a1.sources.r1.interceptors.i1.useIP = false</span><br><span class="line">a1.sources.r1.interceptors.i1.hostHeader = hostname</span><br><span class="line"># 输入 #</span><br><span class="line">telnet localhost 4455</span><br><span class="line">Hi       </span><br><span class="line">OK</span><br><span class="line"># 输出 #</span><br><span class="line">Event: &#123; headers:&#123;hostname=h-m-l&#125; body: 48 69 0D                                        Hi. &#125;</span><br><span class="line"># 使用示例 #</span><br><span class="line">a1.sinks.k1.type=hdfs</span><br><span class="line">a1.sinks.k1.hdfs.path = hdfs://h71:9000/Backup_t/%y%m%d</span><br><span class="line">a1.sinks.k1.hdfs.filePrefix = t_%&#123;hostname&#125;</span><br><span class="line">a1.sinks.k1.hdfs.fileSuffix = .log</span><br><span class="line">a1.sinks.k1.hdfs.fileType = DataStream</span><br><span class="line">a1.sinks.k1.hdfs.writeFormat = Text</span><br><span class="line">a1.sinks.k1.hdfs.rollInterval = 10</span><br><span class="line">a1.sinks.k1.hdfs.useLocalTimeStamp = true</span><br><span class="line"># 使用场景 #</span><br><span class="line">- 日志基于机器日志分类, 作为日志类型的唯一标志</span><br></pre></td></tr></table></figure>
+<h3 id="Static-Interceptor"><a href="#Static-Interceptor" class="headerlink" title="Static Interceptor"></a>Static Interceptor</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">a1.sources.r1.interceptors = i1</span><br><span class="line">a1.sources.r1.interceptors.i1.type = static</span><br><span class="line">a1.sources.r1.interceptors.i1.key = LogType</span><br><span class="line">a1.sources.r1.interceptors.i1.value = Tia</span><br><span class="line"># 输入 #</span><br><span class="line">telnet localhost 4455</span><br><span class="line">Hi       </span><br><span class="line">OK</span><br><span class="line"># 输出 #</span><br><span class="line">Event: &#123; headers:&#123;LogType=Tia&#125; body: 48 69 0D                                        Hi. &#125;</span><br><span class="line"># 使用示例 #</span><br><span class="line">a1.sinks.k1.hdfs.filePrefix = t_%&#123;LogType&#125;</span><br><span class="line"># 使用场景 #</span><br><span class="line">- 日志自定义分类, 作为日志类型的唯一标志</span><br></pre></td></tr></table></figure>
+<h3 id="UUID-Interceptor"><a href="#UUID-Interceptor" class="headerlink" title="UUID Interceptor"></a>UUID Interceptor</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">a1.sources.r1.interceptors = i1</span><br><span class="line">a1.sources.r1.interceptors.i1.type = org.apache.flume.sink.solr.morphline.UUIDInterceptor$Builder</span><br><span class="line">a1.sources.r1.interceptors.i1.preserveExisting = true</span><br><span class="line">a1.sources.r1.interceptors.i1.prefix = UUID_</span><br><span class="line"># 输入 #</span><br><span class="line">telnet localhost 4455</span><br><span class="line">Hi       </span><br><span class="line">OK</span><br><span class="line"># 输出 #</span><br><span class="line">Event: &#123; headers:&#123;id=UUID_1cb50ac7-fef0-4385-99da-45530cb50271&#125; body: 48 69 0D                                        Hi. &#125;</span><br><span class="line"># 使用 #</span><br><span class="line">a1.sinks.k1.hdfs.filePrefix = t_%&#123;id&#125;</span><br><span class="line"># 场景 #</span><br><span class="line">- Hbase rowkey</span><br></pre></td></tr></table></figure>
+<h3 id="Search-and-Replace-Interceptor"><a href="#Search-and-Replace-Interceptor" class="headerlink" title="Search and Replace Interceptor"></a>Search and Replace Interceptor</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">a1.sources.r1.interceptors = i1</span><br><span class="line">a1.sources.r1.interceptors.i1.type = search_replace</span><br><span class="line">a1.sources.r1.interceptors.i1.searchPattern = [0-9]+</span><br><span class="line">a1.sources.r1.interceptors.i1.replaceString = HiGePi</span><br><span class="line">a1.sources.r1.interceptors.i1.charset = UTF-8</span><br><span class="line"># 输入 #</span><br><span class="line">telnet localhost 4455</span><br><span class="line">Hi 1       </span><br><span class="line">OK</span><br><span class="line">Hi 2       </span><br><span class="line">OK</span><br><span class="line"># 输出 #</span><br><span class="line">&#123; headers:&#123;&#125; body: 48 69 0D 48 69 0D Hi HiGePi &#125;</span><br><span class="line">&#123; headers:&#123;&#125; body: 48 69 0D 48 69 0D Hi HiGePi &#125;</span><br><span class="line"># 场景 #</span><br><span class="line">- 简单的清洗</span><br><span class="line"># 注意 #</span><br><span class="line">- 比较消耗Cpu</span><br></pre></td></tr></table></figure>
+<h3 id="Regex-Filtering-Interceptor"><a href="#Regex-Filtering-Interceptor" class="headerlink" title="Regex Filtering Interceptor"></a>Regex Filtering Interceptor</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">a1.sources.r1.interceptors = i1</span><br><span class="line">a1.sources.r1.interceptors.i1.type = regex_filter</span><br><span class="line">a1.sources.r1.interceptors.i1.regex = ^Hi.*</span><br><span class="line">a1.sources.r1.interceptors.i1.excludeEvents = false</span><br><span class="line"># 输入 #</span><br><span class="line">telnet localhost 4455</span><br><span class="line">Hi     </span><br><span class="line">OK</span><br><span class="line">Hello  </span><br><span class="line">OK</span><br><span class="line"># 输出 #</span><br><span class="line">&#123; headers:&#123;&#125; body: 48 69 0D Hi &#125;</span><br><span class="line"># 场景 #</span><br><span class="line">- 简单的过滤</span><br></pre></td></tr></table></figure>
+<h3 id="Regex-Extractor-Interceptor"><a href="#Regex-Extractor-Interceptor" class="headerlink" title="Regex Extractor Interceptor"></a>Regex Extractor Interceptor</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">a1.sources.r1.interceptors.i1.type = regex_extractor</span><br><span class="line">a1.sources.r1.interceptors.i1.regex = id is (.*) and ip is (.*)</span><br><span class="line">a1.sources.r1.interceptors.i1.serializers = s1 s2</span><br><span class="line">a1.sources.r1.interceptors.i1.serializers.s1.name = cookieid</span><br><span class="line">a1.sources.r1.interceptors.i1.serializers.s2.name = ip</span><br><span class="line"># 输入 #</span><br><span class="line">telnet localhost 4455</span><br><span class="line">id is 1 and ip is 127.0.0.1</span><br><span class="line">OK</span><br><span class="line"># 输出 #</span><br><span class="line"> headers:&#123;ip=127.0.0.1, id=1&#125; body: 69 64 20 69 73 20 31 20 61 6E 64 20 69 70 20 69 id is 1 and ip i &#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Flume/" rel="tag"># Flume</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/03/Hexo_tutorial/" rel="next" title="基于Github的轻量级博客Hexo安装教程">
+                <i class="fa fa-chevron-left"></i> 基于Github的轻量级博客Hexo安装教程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Kami</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">categories</span>
+                
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#配置文件"><span class="nav-number">1.</span> <span class="nav-text">配置文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Interceptor-使用案例"><span class="nav-number">2.</span> <span class="nav-text">Interceptor 使用案例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Host-interceptor"><span class="nav-number">2.1.</span> <span class="nav-text">Host interceptor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Static-Interceptor"><span class="nav-number">2.2.</span> <span class="nav-text">Static Interceptor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UUID-Interceptor"><span class="nav-number">2.3.</span> <span class="nav-text">UUID Interceptor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Search-and-Replace-Interceptor"><span class="nav-number">2.4.</span> <span class="nav-text">Search and Replace Interceptor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Regex-Filtering-Interceptor"><span class="nav-number">2.5.</span> <span class="nav-text">Regex Filtering Interceptor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Regex-Extractor-Interceptor"><span class="nav-number">2.6.</span> <span class="nav-text">Regex Extractor Interceptor</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kami</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

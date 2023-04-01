@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="nginx,ecs,字符编码,日志," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="关于nginx日志中request_body被强制转为16进制的问题背景前端埋点日志的传输想依赖更加方便的日志格式，前端可以传输任何格式，初步方案是想让前端将其埋点数据格式转换为可读性更强的日志格式，但是在传输中会遇到一些问题，比如双引号在post请求的时候的nginx日志中&amp;quot;会被识别为\x22,而同样的字符，例如中文字符也会被识别为16进制的字符,导致日志可读性变差，所以需要其解决方案">
+<meta name="keywords" content="nginx,ecs,字符编码,日志">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于nginx日志中request_body被强制转为16进制的问题">
+<meta property="og:url" content="http://yoursite.com/2018/07/03/about_nginx_hex_encode_issue/index.html">
+<meta property="og:site_name" content="Kami little">
+<meta property="og:description" content="关于nginx日志中request_body被强制转为16进制的问题背景前端埋点日志的传输想依赖更加方便的日志格式，前端可以传输任何格式，初步方案是想让前端将其埋点数据格式转换为可读性更强的日志格式，但是在传输中会遇到一些问题，比如双引号在post请求的时候的nginx日志中&amp;quot;会被识别为\x22,而同样的字符，例如中文字符也会被识别为16进制的字符,导致日志可读性变差，所以需要其解决方案">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-07-03T09:50:06.829Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于nginx日志中request_body被强制转为16进制的问题">
+<meta name="twitter:description" content="关于nginx日志中request_body被强制转为16进制的问题背景前端埋点日志的传输想依赖更加方便的日志格式，前端可以传输任何格式，初步方案是想让前端将其埋点数据格式转换为可读性更强的日志格式，但是在传输中会遇到一些问题，比如双引号在post请求的时候的nginx日志中&amp;quot;会被识别为\x22,而同样的字符，例如中文字符也会被识别为16进制的字符,导致日志可读性变差，所以需要其解决方案">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/07/03/about_nginx_hex_encode_issue/"/>
+
+
+
+
+
+  <title>关于nginx日志中request_body被强制转为16进制的问题 | Kami little</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Kami little</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/03/about_nginx_hex_encode_issue/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Kami">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Kami little">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">关于nginx日志中request_body被强制转为16进制的问题</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-03T16:56:13+08:00">
+                2018-07-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/问题日志/" itemprop="url" rel="index">
+                    <span itemprop="name">问题日志</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="关于nginx日志中request-body被强制转为16进制的问题"><a href="#关于nginx日志中request-body被强制转为16进制的问题" class="headerlink" title="关于nginx日志中request_body被强制转为16进制的问题"></a>关于nginx日志中request_body被强制转为16进制的问题</h2><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>前端埋点日志的传输想依赖更加方便的日志格式，前端可以传输任何格式，初步方案是想让前端将其埋点数据格式转换为可读性更强的日志格式，但是在传输中会遇到一些问题，比如双引号在post请求的时候的nginx日志中<code>&quot;</code>会被识别为<code>\x22</code>,而同样的字符，例如中文字符也会被识别为<code>16进制的字符</code>,导致日志可读性变差，所以需要其解决方案。</p>
+<h3 id="demo"><a href="#demo" class="headerlink" title="demo"></a>demo</h3><ul>
+<li>申请一台全新的测试机器</li>
+<li><p>部署nginx服务，其中ali 的 ecs 自带的 nginx 版本为 <code>1.10.x</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apt-get install nginx -y</span><br><span class="line">/etc/init.d/nginx start // 启动</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>测试（直接在网页端输入公网ip即可）</p>
+</li>
+<li><p>修改nginx 配置参数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line">user  nginx;</span><br><span class="line">worker_processes  1;</span><br><span class="line">error_log  /var/log/nginx/error.log warn;</span><br><span class="line">pid        /var/run/nginx.pid;</span><br><span class="line">events &#123;</span><br><span class="line">    worker_connections  1024;</span><br><span class="line">&#125;</span><br><span class="line">http &#123;</span><br><span class="line">    include       /etc/nginx/mime.types;</span><br><span class="line">    default_type  application/octet-stream;</span><br><span class="line">    fastcgi_buffers 32 8k;</span><br><span class="line">    client_body_buffer_size 1024k;</span><br><span class="line">	// 默认nginx配置</span><br><span class="line">    log_format  main  &apos;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &apos;</span><br><span class="line">                      &apos;$status $body_bytes_sent &quot;$http_referer&quot; &apos;</span><br><span class="line">                      &apos;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&apos;;   </span><br><span class="line">	// 用nginx自带的识别json的escape</span><br><span class="line">    log_format json_combined escape=json &apos;&#123;&quot;@timestamp&quot;:&quot;$time_iso8601&quot;,&apos;</span><br><span class="line">    #log_format json_combined &apos;&#123;&quot;@timestamp&quot;:&quot;$time_iso8601&quot;,&apos;</span><br><span class="line">                      &apos;&quot;@source&quot;:&quot;$server_addr&quot;,&apos;</span><br><span class="line">                      &apos;&quot;@nginx_fields&quot;:&#123;&apos;</span><br><span class="line">                      &apos;&quot;remote_addr&quot;:&quot;$remote_addr&quot;,&apos;</span><br><span class="line">                      &apos;&quot;remote_user&quot;:&quot;$remote_user&quot;,&apos;</span><br><span class="line">                      &apos;&quot;body_bytes_sent&quot;:&quot;$body_bytes_sent&quot;,&apos;</span><br><span class="line">                      &apos;&quot;request_time&quot;:&quot;$request_time&quot;,&apos;</span><br><span class="line">                      &apos;&quot;status&quot;:&quot;$status&quot;,&apos;</span><br><span class="line">                      &apos;&quot;host&quot;:&quot;$host&quot;,&apos;</span><br><span class="line">                      &apos;&quot;uri&quot;:&quot;$uri&quot;,&apos;</span><br><span class="line">                      &apos;&quot;q&quot;: &quot;$query_string&quot;,&apos;</span><br><span class="line">                      &apos;&quot;server&quot;:&quot;$server_name&quot;,&apos;</span><br><span class="line">                      &apos;&quot;port&quot;:&quot;$server_port&quot;,&apos;</span><br><span class="line">                      &apos;&quot;protocol&quot;:&quot;$server_protocol&quot;,&apos;</span><br><span class="line">                      &apos;&quot;request_uri&quot;:&quot;$request_uri&quot;,&apos;</span><br><span class="line">                      &apos;&quot;request_body&quot;:&quot;$request_body&quot;,&apos;</span><br><span class="line">                      &apos;&quot;request_method&quot;:&quot;$request_method&quot;,&apos;</span><br><span class="line">                      &apos;&quot;http_referrer&quot;:&quot;$http_referer&quot;,&apos;</span><br><span class="line">                      &apos;&quot;body_bytes_sent&quot;:&quot;$body_bytes_sent&quot;,&apos;</span><br><span class="line">                      &apos;&quot;http_x_forwarded_for&quot;:&quot;$http_x_forwarded_for&quot;,&apos;</span><br><span class="line">                      &apos;&quot;http_user_agent&quot;:&quot;$http_user_agent&quot;,&apos;</span><br><span class="line">                      &apos;&quot;upstream_response_time&quot;:&quot;$upstream_response_time&quot;,&apos;</span><br><span class="line">                      &apos;&quot;upstream_addr&quot;:&quot;$upstream_addr&quot;&#125;&#125;&apos;;</span><br><span class="line">	// 默认拼接方式</span><br><span class="line">    log_format mini_log_json &apos;&#123; &quot;t_lc&quot;: &quot;$time_iso8601&quot;, &apos;</span><br><span class="line">                                     #&apos;&quot;host&quot;: &quot;$host&quot;, &apos;</span><br><span class="line">             &apos;&quot;remt_addr&quot;: &quot;$remote_addr&quot;, &apos;</span><br><span class="line">             &apos;&quot;remt_user&quot;: &quot;$remote_user&quot;, &apos;</span><br><span class="line">             &quot;bdy_b_sent&quot;: &quot;$body_bytes_sent&quot;, &apos;</span><br><span class="line">             &apos;&quot;req_t&quot;: &quot;$request_time&quot;, &apos;</span><br><span class="line">             &apos;&quot;req_len&quot;: &quot;$request_length&quot;, &apos;</span><br><span class="line">             &apos;&quot;sts&quot;: &quot;$status&quot;, &apos;</span><br><span class="line">             &apos;&quot;q&quot;: &quot;$query_string&quot;, &apos;</span><br><span class="line">             &apos;&quot;q_1&quot;: &quot;$request_body&quot;, &apos;</span><br><span class="line">             &apos;&quot;req_fnm&quot;: &quot;$request_filename&quot;, &apos;</span><br><span class="line">             &apos;&quot;req_mtd&quot;: &quot;$request_method&quot;, &apos;</span><br><span class="line">             &apos;&quot;htp_refr&quot;: &quot;$http_referer&quot;, &apos;</span><br><span class="line">             &apos;&quot;sv_protocol&quot;: &quot;$server_protocol&quot;, &apos;</span><br><span class="line">             &apos;&quot;bdy_b_sent&quot;:&quot;$body_bytes_sent&quot;, &apos;</span><br><span class="line">             &apos;&quot;upstr_addr&quot;: &quot;$upstream_addr&quot;,&apos;  </span><br><span class="line">             &apos;&quot;upstr_host&quot;: &quot;$upstream_http_host&quot;,&apos;  </span><br><span class="line">             &apos;&quot;ups_resp_t&quot;: &quot;$upstream_response_time&quot;, &apos;</span><br><span class="line">             &apos;&quot;usr_agt&quot;: &quot;$http_user_agent&quot;, &apos;</span><br><span class="line">             &apos;&quot;htp_x_fwded&quot;: &quot;$http_x_forwarded_for&quot; &#125;&apos;;</span><br><span class="line">    access_log /var/log/nginx/access.log json_combined;</span><br><span class="line">    upstream bk_servers_2 &#123;</span><br><span class="line">        server 127.0.0.1:6699;</span><br><span class="line">    &#125;</span><br><span class="line">    #sendfile        on;</span><br><span class="line">    #tcp_nopush     on;</span><br><span class="line">    keepalive_timeout  65;</span><br><span class="line">    #gzip  on;</span><br><span class="line">    include /etc/nginx/conf.d/*.conf;</span><br><span class="line">	// 转发</span><br><span class="line">    server &#123;</span><br><span class="line">        listen       80 default_server;</span><br><span class="line">        server_name  _;</span><br><span class="line">       location ^~ /aa/ &#123;</span><br><span class="line">           proxy_pass  http://bk_servers_2/api/log/letv/env;</span><br><span class="line">           access_log  /var/log/nginx/access_2.log json_combined;</span><br><span class="line">       #    default_type text/xml;</span><br><span class="line">       #    return 204;</span><br><span class="line">       &#125;</span><br><span class="line">       location /api/log/letv/env &#123;</span><br><span class="line">            return 202;</span><br><span class="line">       &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>根据上面配置好以后<code>escape=json</code>并没有生效</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Syntax: log_format name [escape=default|json] string ...;</span><br><span class="line">Default: log_format combined &quot;...&quot;;</span><br><span class="line">Context: http</span><br><span class="line">The escape parameter (1.11.8) allows setting json or default characters escaping in variables, by default, default escaping is used.</span><br><span class="line">// 至少nginx版本要在 1.11.x 才可以</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在nginx 1.11.8 以上版本中log_format 增加了escape=json 参数，在配置日志格式时加上此参数可以不转义变量内容</p>
+</li>
+<li><p>升级nginx</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">wget http://nginx.org/keys/nginx_signing.key</span><br><span class="line">apt-key add nginx_signing.key</span><br><span class="line">vi /etc/apt/sources.list</span><br><span class="line">// 将以下两行加入到sources.list文件中，注意修改codename为对应的值（见附表一）</span><br><span class="line">deb http://nginx.org/packages/mainline/ubuntu/ codename nginx</span><br><span class="line">deb-src http://nginx.org/packages/mainline/ubuntu/ codename nginx</span><br><span class="line">// url 中的 /mainline 表示最新的主线版线，如果删掉以后，将下载最新的稳定版本。具体的本版情况，可查看官方地址：http://nginx.org/en/download.html</span><br><span class="line">apt-get remove nginx-common</span><br><span class="line">apt-get update</span><br><span class="line">apt-get install nginx</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>测试</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">curl -i  -d &quot;&#123;\&quot;aaa\&quot;:1,\&quot;bbb\&quot;:2&#125;&quot; &quot;http://127.0.0.1:80/aa/asdf&quot;</span><br><span class="line">// 使用log_format json_combined 配置</span><br><span class="line">... request_body&quot;:&quot;&#123;\x22aaa\x22:1,\x22bbb\x22:2&#125;&quot; ...</span><br><span class="line">// log_format json_combined escape=json</span><br><span class="line">... request_body&quot;:&quot;&#123;\&quot;aaa\&quot;:1,\&quot;bbb\&quot;:2&#125;&quot; ...</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="http://www.voidcn.com/article/p-hdmhbffz-bkq.html" target="_blank" rel="noopener">nginx $request_body命令</a></li>
+<li><a href="https://w3ctech.com/topic/1873" target="_blank" rel="noopener">升级nginx</a></li>
+<li>附表一</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>系统版本</th>
+<th>Codename</th>
+<th>支持平台</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>12.04</td>
+<td>precise</td>
+<td>x86_64, i386</td>
+</tr>
+<tr>
+<td>14.04</td>
+<td>trusty</td>
+<td>x86_64, i386, aarch64/arm64</td>
+</tr>
+<tr>
+<td>15.10</td>
+<td>wily</td>
+<td>x86_64, i386</td>
+</tr>
+<tr>
+<td>16.04</td>
+<td>xenial</td>
+<td>x86_64, i386</td>
+</tr>
+</tbody>
+</table>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/nginx/" rel="tag"># nginx</a>
+          
+            <a href="/tags/ecs/" rel="tag"># ecs</a>
+          
+            <a href="/tags/字符编码/" rel="tag"># 字符编码</a>
+          
+            <a href="/tags/日志/" rel="tag"># 日志</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/03/Hexo_tutorial/" rel="prev" title="基于Github的轻量级博客Hexo安装教程">
+                基于Github的轻量级博客Hexo安装教程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Kami</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">categories</span>
+                
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#关于nginx日志中request-body被强制转为16进制的问题"><span class="nav-number">1.</span> <span class="nav-text">关于nginx日志中request_body被强制转为16进制的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景"><span class="nav-number">1.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#demo"><span class="nav-number">1.2.</span> <span class="nav-text">demo</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">2.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Kami</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
