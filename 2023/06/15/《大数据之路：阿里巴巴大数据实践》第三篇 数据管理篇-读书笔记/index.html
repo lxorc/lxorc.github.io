@@ -1,0 +1,331 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><title>《大数据之路：阿里巴巴大数据实践》第三篇 数据管理篇-读书笔记 | kami's blog</title><meta name="author" content="kami"><meta name="copyright" content="kami"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="三、数据管理篇12.元数据12.1 元数据概念12.1.1 元数据定义按照传统的定义，元数据（Metadata）是关于数据的数据。元数据打通了源数据、数据仓库、数据应用，记录了数据从产生到消费的全过程。元数据主要记录数据仓库中的模型的定义、各层级间的映射关系、监控数据仓库的数据状态一级ETL的任务运行状态。在数据仓库系统中，元数据可以帮助数据仓库管理员和开发人员非常方便的找到他们所关心的数据，用于">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《大数据之路：阿里巴巴大数据实践》第三篇 数据管理篇-读书笔记">
+<meta property="og:url" content="http://example.com/2023/06/15/%E3%80%8A%E5%A4%A7%E6%95%B0%E6%8D%AE%E4%B9%8B%E8%B7%AF%EF%BC%9A%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AE%9E%E8%B7%B5%E3%80%8B%E7%AC%AC%E4%B8%89%E7%AF%87%20%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86%E7%AF%87-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="kami&#39;s blog">
+<meta property="og:description" content="三、数据管理篇12.元数据12.1 元数据概念12.1.1 元数据定义按照传统的定义，元数据（Metadata）是关于数据的数据。元数据打通了源数据、数据仓库、数据应用，记录了数据从产生到消费的全过程。元数据主要记录数据仓库中的模型的定义、各层级间的映射关系、监控数据仓库的数据状态一级ETL的任务运行状态。在数据仓库系统中，元数据可以帮助数据仓库管理员和开发人员非常方便的找到他们所关心的数据，用于">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/avatar.jpg">
+<meta property="article:published_time" content="2023-06-15T07:18:00.000Z">
+<meta property="article:modified_time" content="2023-06-15T07:18:00.000Z">
+<meta property="article:author" content="kami">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2023/06/15/%E3%80%8A%E5%A4%A7%E6%95%B0%E6%8D%AE%E4%B9%8B%E8%B7%AF%EF%BC%9A%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AE%9E%E8%B7%B5%E3%80%8B%E7%AC%AC%E4%B8%89%E7%AF%87%20%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86%E7%AF%87-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '《大数据之路：阿里巴巴大数据实践》第三篇 数据管理篇-读书笔记',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-06-15 15:18:00'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">4</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://images.unsplash.com/photo-1472457897821-70d3819a0e24?ixlib=rb-4.0.3&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=2069&amp;q=80')"><nav id="nav"><span id="blog-info"><a href="/" title="kami's blog"><span class="site-name">kami's blog</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">《大数据之路：阿里巴巴大数据实践》第三篇 数据管理篇-读书笔记</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-06-15T07:18:00.000Z" title="发表于 2023-06-15 15:18:00">2023-06-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-06-15T07:18:00.000Z" title="更新于 2023-06-15 15:18:00">2023-06-15</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="《大数据之路：阿里巴巴大数据实践》第三篇 数据管理篇-读书笔记"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="三、数据管理篇"><a href="#三、数据管理篇" class="headerlink" title="三、数据管理篇"></a>三、数据管理篇</h1><h2 id="12-元数据"><a href="#12-元数据" class="headerlink" title="12.元数据"></a>12.元数据</h2><h3 id="12-1-元数据概念"><a href="#12-1-元数据概念" class="headerlink" title="12.1 元数据概念"></a>12.1 元数据概念</h3><h4 id="12-1-1-元数据定义"><a href="#12-1-1-元数据定义" class="headerlink" title="12.1.1 元数据定义"></a>12.1.1 元数据定义</h4><p>按照传统的定义，元数据（Metadata）是关于数据的数据。元数据打通了源数据、数据仓库、数据应用，记录了数据从产生到消费的全过程。元数据主要记录数据仓库中的模型的定义、各层级间的映射关系、监控数据仓库的数据状态一级ETL的任务运行状态。在数据仓库系统中，元数据可以帮助数据仓库管理员和开发人员非常方便的找到他们所关心的数据，用于指导其进行数据管理和开发工作，提高工作效率。</p>
+<p>元数据可以分为技术元数据 和 业务元数据。</p>
+<p>技术元数据（Technical Metadata）：技术元数据是存储关于数据仓库系统技术细节的数据，是用于开发和管理数据仓库是使用的数据。阿里巴巴常见的技术元数据有：</p>
+<p>分布式计算系统存储元数据，如MaxCompute上所有作业运行等信息；类似Hive的Job日志，你包括作业类型、实例名称、输入输出、SQL、运行参数、执行时间、最细粒度的FuXi Instance执行信息等；</p>
+<p>数据开发平台中数据同步，计算任务、任务调度等信息，包括数据同步的输入输出表和字段，以及同步任务本身的节点信息；计算任务主要有输入输出、任务本身的节点信息；任务调度主要有任务的依赖类型、依赖关系等，以及不同类型调度的运行日志等；</p>
+<p>数据质量和运维相关元数据，如任务监控、运维报警、数据质量、故障灯信息，包括任务监控运行日志、告警配置及运行日志、故障信息等；</p>
+<p>业务元数据（Business Metadata）：业务元数据从业务角度描述了数据仓库中的数据，它提供了介于使用者和实际系统之间的语音层，使得不懂计算机技术的业务人员也能够“读懂”数据仓库中的数据；</p>
+<p>OneData元数据，如维度及属性、业务过程、指标等的规范化定义，用于更好地管理和使用数据；</p>
+<p>数据应用元数据，如数据报表、数据产品等的配置和运行元数据；</p>
+<h4 id="12-1-2-元数据价值"><a href="#12-1-2-元数据价值" class="headerlink" title="12.1.2  元数据价值"></a>12.1.2  元数据价值</h4><p>元数据有重要的应用价值，是数据管理、数据内容、数据应用的基础，在数据管理方面为集团数据提供在计算、存储、成本、质量、安全、模型等治理领域上的数据支持。例如在计算上可以利用元数据查找超长运行节点，对这些节点进行专项治理，保障基线产出时间。在数据内容方面为集团数据进行数据域、数据主题、业务属性等的提取和分析提供数据素材。例如可以利用元数据构建知识图谱，给数据打标签，清楚的知道现在有哪些数据。在数据应用方面打通产品及应用链路，保障产品数据准确、及时产出。例如打通MaxCompute和应用数据，明确数据资产等级，更有效地保障产品数据；</p>
+<h4 id="12-1-3-统一元数据体系建设"><a href="#12-1-3-统一元数据体系建设" class="headerlink" title="12.1.3 统一元数据体系建设"></a>12.1.3 统一元数据体系建设</h4><p>元数据的质量直接影响到数据管理的准确性，如何把元数据建设好将起到至关重要的重要的作用。元数据建设的目标是打通数据接入到加工，再到数据消费整个链路，规范元数据体系与模型，提供统一的元数据服务出口，保障元数据产出的稳定性和质量；</p>
+<p><img src="https://raw.githubusercontent.com/lxorc/images/master/img/Pasted%20image%2020230615152055.png" alt="Pasted image 20230615152055"></p>
+<p>首先梳理清楚元仓底层数据，元数据做分类，如计算元数据、存储元数据、质量元数据等，减少数据重复建设，保障数据的唯一性。另外，要丰富表和字段的使用说明，方便实用和理解。根据元仓底层数据构建元仓中间层，依据OneData规范，建设元数据基础宽表，也就是元数据中间层，打通从数据产生到消费整个链路，不断丰富中间层数据，如MaxCompute元数据、调度元数据、同步元数据、产品访问元数据、服务元数据等。基于元数据中间层，对外提供标准统一的元数据服务出口，保障元数据产出的质量，丰富的元数据中间层不仅能够为集团数据提供在计算、存储、成本、质量、安全、模型等治理领域上的数据支持，形成一套完整的ROI数据体系，而且为集团数据进行数据内容、数据领域、数据主题、业务属性等的提取和分析提供了数据素材；</p>
+<h3 id="12-2-元数据应用"><a href="#12-2-元数据应用" class="headerlink" title="12.2 元数据应用"></a>12.2 元数据应用</h3><p>数据的真正价值在于数据驱动决策，通过数据指导运营。通过数据驱动的方法，我们能够判断趋势，从而展开有效行动，帮助自己发现问题，推动创新或解决方案的生产；对于元数据，可以用于指导数据相关人员进行日常工作，实现数据化“运营”；例如数据使用者，可以通过元数据让其快速找到所需要的数据；对ETL工程师，可以通过元数据指导其进行模型设计、任务优化和任务下线等各种日常ETL工作；对于运维工程师，可以通过元数据指导其进行整个集群的存储、计算和系统优化等运维工作；</p>
+<h4 id="12-2-1-Data-Profile"><a href="#12-2-1-Data-Profile" class="headerlink" title="12.2.1 Data Profile"></a>12.2.1 Data Profile</h4><p>Data Profile的出现，很好地解决了在研发初期数据处理的繁杂困境，即节约了时间成本，同时也缩减了相当一部分人力资源。它的核心思路是为纷繁复杂的数据建立一个脉络清晰的血缘关系图谱。通过图计算、标签传播算法等技术，系统化、自动化地对计算与存储平台上的数据进行打标、整理、归档。形象地说，Data Profile实际承担的是为了元数据“画像”的任务；数据之间的个性化，除了应用场景的不同之外，实际上在数据的研发流程、保障等级、数据质量要求、安全等级、运维策略、告警设置上都有差异。</p>
+<p>Data Profile开发了四类标签</p>
+<p>基础标签：针对数据的存储情况，访问情况、安全等级等进行打标；</p>
+<p>数仓标签：针对数据是增量还是全量、是否可再生、数据的生命周期来进行标签化处理；</p>
+<p>业务标签：根据数据归属的主题域、产品线、业务类型为数据打上不同的标签；</p>
+<p>潜在标签：这类标签主要是为了说明数据签字啊的应用场景，比如社交媒体、广告、电商、金融等；</p>
+<h4 id="12-2-2-元数据门户"><a href="#12-2-2-元数据门户" class="headerlink" title="12.2.2 元数据门户"></a>12.2.2 元数据门户</h4><p>阿里基于元数据产出的最重要产品是元数据门户。元数据门户致力打造一站式的数据管理平台、高效的一体化数据市场。包括“前台”和“后台”。</p>
+<h4 id="12-2-3-应用链路分析"><a href="#12-2-3-应用链路分析" class="headerlink" title="12.2.3 应用链路分析"></a>12.2.3 应用链路分析</h4><p>对于某个数据计算任务或表，其重要程度如何，是否还有下游在使用，是否可以下线；阿里有这么多数据产品，都依赖那些MaxCompute表，对这些MaxCompute表是否需要根据应用的重要程度进行资源、运维保障；对于这些问题，我们可以通过元数据血缘关系来分析产品以及应用的链路，通过血缘链路可以清除地统计到某个产品所用到的数据在计算、存储、质量上存在哪些问题，通过治理优化保障产品的稳定性。</p>
+<p>主要分成两部分统计</p>
+<p>一种是通过MaxCompute任务日志进行解析。</p>
+<p>一种是根据任务以来进行解析。</p>
+<h4 id="12-2-4-数据建模"><a href="#12-2-4-数据建模" class="headerlink" title="12.2.4 数据建模"></a>12.2.4 数据建模</h4><p>所使用的元数据有</p>
+<p>表的基础元数据：下游情况、查询次数、关联次数、聚合次数、产出时间。</p>
+<p>表的关联关系元数据：关联表、关联类型、关联字段、关联次数、</p>
+<p>表的字段基础元数据：字段名称、字段注释、查询次数、关联次数、聚合次数、过滤次数。</p>
+<p>在星型模式设计中，可能类似于如下使用元数据：</p>
+<p>基于下游使用中关联次数大于某个阈值的表或者查询次数大于某个阈值的表等元数据信息，筛选用于数据模型建模的表；</p>
+<p>基于表的字段元数据，如字段中的时间字段、字段在下游使用中的过滤次数等，选择业务过程标识字段；</p>
+<p>基于主从表等关联关系、关联次数，确定和主表关联的从表；</p>
+<p>基于主从表的字段使用情况，如字段的查询次数、过滤次数、关联次数、聚合次数等，确定哪些字段进入目标模型；</p>
+<h4 id="12-2-5-驱动ETL开发"><a href="#12-2-5-驱动ETL开发" class="headerlink" title="12.2.5 驱动ETL开发"></a>12.2.5 驱动ETL开发</h4><p>通过元数据，指导ETL工作，提供ETL的效率；</p>
+<p>在“数据同步”章节中，我们提到了通过元数据驱动一键、批量高效数据同步的OneClick；</p>
+<p>我们可以通过Data Profile得倒数据的下游任务依赖关系情况、最近被读写的次数、数据是否可再生、每天消耗的存储计算等，这些信息足以让我们判断数据是否可以下线；</p>
+<p>如果一些规则判断可以下线，我们则会通过OneClick触发一个数据下线工作任务流，数据Owner可能只需要提交按钮、删除数据、删除数据、下线调度任务、下线DQC监控等一些列操作就会自动在后台执行完成；</p>
+<h2 id="13-计算管理"><a href="#13-计算管理" class="headerlink" title="13.计算管理"></a>13.计算管理</h2><p>目前内部MaxCompute集群上有200多万个任务，每天存储资源、计算资源消耗都很大。如何降低资源的消耗，提高任务执行的性能，提升任务产出时间，是计算平台和ETL开发工程师孜孜追求的目标；</p>
+<h3 id="13-1-系统优化"><a href="#13-1-系统优化" class="headerlink" title="13.1 系统优化"></a>13.1 系统优化</h3><p>Hadoop等分布式计算系统评估资源的方式，一般是根据输入数据量静态评估，Map任务用于处理输入，对于普通的Map任务，评估一般符合预期；而对于Reduce任务，其输入来自于Map的输出，到那时一般只能根据Map任务的输入进行评估，经常和实际需要的资源数相差很大，所以在任务稳定的情况下，可以考虑给予任务的历史执行情况进行资源评估，即采用HBO（History-Based Optimizer，基于历史的优化器）；</p>
+<p>提到CBO（Cost-Based Optimizer，基于代价的优化器），首先会想到Oracle的CBO。Oracle会收到的表、分区、索引等统计信息来计算每种执行方式的代价（Cost），进而选择其中最优的执行方式；</p>
+<h3 id="13-2-任务优化"><a href="#13-2-任务优化" class="headerlink" title="13.2 任务优化"></a>13.2 任务优化</h3><p>本节主要从数据倾斜方面讨论数据优化；SQL&#x2F;MR作业一般会生成MapReduce任务，在MaxCompute中则会生成MaxCompute Instance，通过唯一的ID进行标识；</p>
+<p>Fuxi Job:对于MaxCompute Instance，则会生成一个或多个由Fuxi Task组成的有向无环图，即Fuxi Job。MaxCompute Instance和Fuxi Job类似于Hive中的Job 概念；</p>
+<p>Fuxi Task:主要包含三种类型，分别是Map、Reduce和Join,类似于Hive中的Task概念；</p>
+<p>Fuxi Instance:真正的计算单元，和Hive中的概念类似，一般和槽位slotd对应；</p>
+<h4 id="13-2-1-Map倾斜"><a href="#13-2-1-Map倾斜" class="headerlink" title="13.2.1 Map倾斜"></a>13.2.1 Map倾斜</h4><h4 id="13-2-2-Join倾斜"><a href="#13-2-2-Join倾斜" class="headerlink" title="13.2.2 Join倾斜"></a>13.2.2 Join倾斜</h4><h4 id="13-2-3-Reduce倾斜"><a href="#13-2-3-Reduce倾斜" class="headerlink" title="13.2.3 Reduce倾斜"></a>13.2.3 Reduce倾斜</h4><h2 id="14-存储成本管理"><a href="#14-存储成本管理" class="headerlink" title="14.存储成本管理"></a>14.存储成本管理</h2><p>在大数据时代，移动互联、社交网络、数据分析、云服务等应用迅速普及，对数据中心提出了革命性的需求，存储管理已经成为了IT核心之一。对于数据爆炸式的增长，存储管理也要面临一系列挑战。如何有效地降低存储资源的消耗，节省存储成本，将是存储管理孜孜追求的目标；</p>
+<h3 id="14-1-数据压缩"><a href="#14-1-数据压缩" class="headerlink" title="14.1 数据压缩"></a>14.1 数据压缩</h3><p>在分布式文件系统中，为了提高数据的可用性与性能，通常会讲数据存储3分，这就意味着存储1TB的逻辑数据，实际上会占用3TB的物理空间。目前MacCompute中提供了archive压缩方法，它采用了具由更高压缩比的压缩算法，可以将数据保存为RAID file的形式，数据不再简单地保存为3分，而是使用盘古RAID file的默认值（6，3）格式文件，即6分数据 + 3份校验块的方式，这样能够有效地存储比约为1：3提高到1:1.5，大约能够节省下一半的物理空间。当然，使用archive压缩方式也有一定的风险，如果某个块出现了损坏或者某台机器当即损坏。因此，目前一定将archive压缩方法应用在冷备数据与日志数据的压缩存储上。例如，一些非常大的淘系日志数据，底层数据超过一定时间期限后使用频率非常低，但是有属于不可恢复的充要数据，对于这部分就可以考虑对历史数据的分区进行archive压缩，使用RAID file来存储，以此节省存储空间。</p>
+<h3 id="14-2-数据重分布"><a href="#14-2-数据重分布" class="headerlink" title="14.2 数据重分布"></a>14.2 数据重分布</h3><p>在MaxCompute中主要采用基于列存储的方式，由于每个表的数据分布不同，插入数据的顺序不一样，会导致压缩效果有很大的差异，因此通过修改表的数据重分布，避免列热点，将会节省一定的存储空间。目前我们主要通过修改distribute by 和 sort by字段的方法进行数据重分布；</p>
+<p><img src="https://raw.githubusercontent.com/lxorc/images/master/img/Pasted%20image%2020230615152116.png" alt="Pasted image 20230615152116"></p>
+<p>数据重分布效果的波动比较大，这主要跟数据表中字段的重复值、字段本身的大小、其他字段的具体分布有一定的关系，一般我们会筛选出重分布效果高于15%的表进行优化处理；</p>
+<h3 id="14-3-存储治理项优化"><a href="#14-3-存储治理项优化" class="headerlink" title="14.3 存储治理项优化"></a>14.3 存储治理项优化</h3><p>阿里有一套实践摸索的适合大数据的存储优化方式，在元数据的基础上，诊断、加工成多个存储治理优化项。目前已有的存储治理优化项由未管理表、空表、最近62天未访问表、数据无更新无任务表、数据无更新有任务表，开发库数据大衣100GB且无访问表、长周期等。通过对该优化项的数据诊断，形成了治理项，治理项通过流程的方式进行运转、管理，最终推断诊断，形成治理项，治理项通过流程的方式进行运转、管理，最终推动各个ETL开发人员进行操作，优化存储管理，并及时回收优化的存储效果。</p>
+<h3 id="14-4-生命周期管理"><a href="#14-4-生命周期管理" class="headerlink" title="14.4 生命周期管理"></a>14.4 生命周期管理</h3><p>MaxCompute作为阿里巴巴集团的大数据计算以及服务引擎，存储着阿里系大量且非常重要的数据，从数据价值以及数据使用性方面综合考虑，数据生命周期管理是存储管理的一项重要手段。生命周期管理根本就是用最少的存储成本来满足最大的业务需求，使数据价值最大化。</p>
+<h4 id="14-4-1-生命周期管理策略"><a href="#14-4-1-生命周期管理策略" class="headerlink" title="14.4.1 生命周期管理策略"></a>14.4.1 生命周期管理策略</h4><p>1.周期性删除策略：所有存储的数据都有一定的有效期，从数据创建开始到过时，可以周期性删除X天前的数据。例如对于MySQL业务库同步到MaxCompute的全量数据，或者ETL过程产生的结果数据，其中某些历史数据可能已经没有价值，且占用用存储成本，那么针对无效的历史数据就可以进行定期删除；</p>
+<p>2.彻底删除策略：无用表数据或者ETL过程生产的临时数据，以及不需要保留的数据，可以进行及时删除，包括删除元数据；</p>
+<p>3.永久保留策略：重要且不可恢复的底层数据和应用需要永久保留。比如底层交易量数据，处于存储成本与数据价值平衡的考虑，需要永久保留，用于历史数据的恢复与核查；</p>
+<p>4.极限存储策略：极限存储可以超高压缩重复镜像数据，通过平台化配置手段实现透明访问；缺点是对数据质量要求非常高，配置与维护成本比较高，建议一个分区超过5GB的镜像数据（如商品维表、用户维表）就是使用了寄存存储；</p>
+<p>5.冷数据管理策略：冷数据管理是永久保留策略的扩展。永久保留的数据需要迁移到冷数据中进行永久保存，同时将MaxCompute中对应的数据删除。一般将重要且不可恢复的、占用存储空间大于100TB，且访问频次较低的数据进行冷备，例如3年以上的日志数据；</p>
+<p>6.增量表merge全量表策略：对于某些表特定的数据，基线存储在使用性能上与存储方面的优势不是很明显，需要改成增量同步与全量merge的方式，对于对应的delta增量表的保存策略，目前默认保留93天。例如，交易增量数据，使用订单创建日期或者订单结束日期作为分区，同时将未完结订单放在最大分区中，对于存储，一个订单在表里只保留一份；对于用户使用，通过分区条件就能查询一段时间的数据；</p>
+<h4 id="14-4-2-通用的生命周期管理矩阵"><a href="#14-4-2-通用的生命周期管理矩阵" class="headerlink" title="14.4.2 通用的生命周期管理矩阵"></a>14.4.2 通用的生命周期管理矩阵</h4><p>随着业务的发展和不断的数据实践，整理出一套适合大数据生命周期管理的规范，主要通过对历史数据的等级划分与对比类型的划分成相应的生命周期管理；</p>
+<p>1.历史数据等级划分</p>
+<p>P0: 非常重要的主题域数据和非常重要的应用数据，具有不可恢复性如交易、日志、集团KPI数据、IPO关联；</p>
+<p>P1: 重要的业务数据和重要的应用数据，具有不可恢复性，如重要的业务产品数据；</p>
+<p>P2: 重要的业务数据和重要的应用数据，具有可恢复性，如交易线ETL产生的中间过程；</p>
+<p>P3: 不重要的业务数据和不重要的应用数据，具有可恢复性，如某些SNS产品报表；</p>
+<p>2.表类型划分</p>
+<p>1.事件型流水表（增量表）：事件型流水表（增量表）指数据无重复或者无主键数据，如日志；</p>
+<p>2.事件型镜像表（增量表）：事件型镜像表（增量表）指业务过程性数据，有主键，但对于同样主键的变更的属性会发生缓慢变化，如加以、订单状态与时间业务发生变更；</p>
+<p>3.维表：维表包括维度与维度属性数据，如用户表、商品表；</p>
+<p>4.Merge全量表：Merge全量表包括业务过程性数据会和维度表挂逆袭。由于数据本身有新增的或者发生状态变更，对于听杨主键的数据可能会保留多份，因此可以对这些数据根据主键进行Merge操作，主键对应的属性只会保留最新状态，历史状态保留在一起哪前一天分区中。例如，用户表、交易表都可以进行Merge从左</p>
+<p>5.ETL 临时表：ETL 临时表是指ETL处理过程中产生的临时数据，一般不建议保留7最多，最多7团；</p>
+<p>6.TT临时数据：TT拉取的数据和DBSync产生的临时数据最终会流转到ODS层，ODS层数据作为原始数据保留下来，从而使得TT&amp;DBSync上游数据成为临时数据。这类数据不建议保留很长时间，生命周期默认为93天，可以根据实际情况适当减少保留天数；</p>
+<p>7.普通全量表：很多小业务数据或者产品数据，BI一般是直接全量拉取，这种方式效率快，对存储压力也不是很大，而且表保留很长时间，可以根据历史数据等级确定保留策略；</p>
+<p><img src="https://raw.githubusercontent.com/lxorc/images/master/img/Pasted%20image%2020230615152141.png" alt="Pasted image 20230615152141"></p>
+<p><img src="https://raw.githubusercontent.com/lxorc/images/master/img/Pasted%20image%2020230615152150.png" alt="Pasted image 20230615152150"></p>
+<p>MaxCompute集群中海量数据的存储和大量计算任务每天都会消耗巨额成本，并且随着数据量的不断增长，这个成本还在逐步增加。如何在服务好业务的前提下，更好地管控数据成本，提升资源利用率，已成为数据资产管理的重要环节；</p>
+<p>在阿里内部，大部分的数据都存储在MaxCompute集群上，数据以表形式存储，并且数据表之间存在比较复杂的关联和上下游依赖关系；</p>
+<p>如下图：途中A、B、 C代表不同的数据表，带箭头的连线表代表数据表纸巾啊的关联关系。</p>
+<p><img src="https://raw.githubusercontent.com/lxorc/images/master/img/Pasted%20image%2020230615152214.png" alt="Pasted image 20230615152214"></p>
+<p>MaxCompute中的任何一个计算任务都会涉及计算和存储资源的消耗，其中计算资源的消耗主要考虑CPU消耗。为了下面更好地描述数据计量计费的算法和规则，特作如下定义：CPU消耗的单位定义为CU，代表CPU的一个核心（Core）运行一天的消耗量。存储资源的消耗主要考虑吧磁盘存储的消耗，这里采用国际通用的存储单位PB来衡量。例如：计算资源的单价为1元&#x2F;CU，存储资源的单价为1元&#x2F;PB。</p>
+<h3 id="14-5-数据成本计量"><a href="#14-5-数据成本计量" class="headerlink" title="14.5 数据成本计量"></a>14.5 数据成本计量</h3><p>对数据成本的计量，可以采用最简单的方式，讲一个数据表的成本分为存储成本和计算成本，存储成本是为了计算数据表消耗的存储资源，计算成本是为了计量数据计算过程中CPU消耗。但是，对这样的数据成本计量方式会存在较大的质疑和挑战。例如，如下图，表D是也无妨的一个数据表，表D依赖表C，但是为了产生表C，往往上面存在一个较长的数据刷新链路。表C的成本肯格式10元，但是表A、B可能会是100元。像这样的情况，如果表C的成本仅仅用数据表C自身的存储和计算成本衡量显然是不合理、不准确的；</p>
+<p><img src="https://raw.githubusercontent.com/lxorc/images/master/img/Pasted%20image%2020230615152229.png" alt="Pasted image 20230615152229"></p>
+<p>因此，在计量数据表的成本时，除考虑数据表本身的计算成本、存储成本外，还要考虑对上游数据表的扫描带来的扫描成本。</p>
+<p>数据成本分类：</p>
+<p>存储成本；</p>
+<p>计算成本；</p>
+<p>扫描成本；</p>
+<h3 id="14-6-数据使用计费"><a href="#14-6-数据使用计费" class="headerlink" title="14.6 数据使用计费"></a>14.6 数据使用计费</h3><p>计算付费；</p>
+<p>存储付费；</p>
+<p>扫描付费；</p>
+<h2 id="15-数据质量"><a href="#15-数据质量" class="headerlink" title="15.数据质量"></a>15.数据质量</h2><p>随着IT向DT时代的转变，数据的重要性不言而喻，数据的应用也日趋繁茂，数据正扮演着极其重要的角色。而对于被日益重视的数据，如何保障其质量是一个关注的话题；</p>
+<p>数据质量是数据分析结论有效性和准确性的基础，也是一切的前提。如何保障数字质量，确保数据可用性时阿里数据仓库建设不容忽视的环节。</p>
+<h3 id="15-1-数据质量保障原则"><a href="#15-1-数据质量保障原则" class="headerlink" title="15.1 数据质量保障原则"></a>15.1 数据质量保障原则</h3><p>从四个方面评估</p>
+<p><img src="https://raw.githubusercontent.com/lxorc/images/master/img/Pasted%20image%2020230615152243.png" alt="Pasted image 20230615152243"></p>
+<p>1.完整性</p>
+<p>完整性是指数据的记录和信息是否完整，是否存在缺失的情况。数据的却是主要包括了确实和记录中某个字段信息的却是，两者都会造成统计结果不准确，所以说完整性是数据质量的最基础的保障。如碧交易中每天支付订单数都在100W笔左右，如果某天支付订单突然下降1W笔，那么很可能是记录缺失。对于记录中某个字段信息的缺失，比如订单的商品ID、卖家ID都是必然存在的，这些字段的空值个数肯定是0，一旦大于0就必然违背了完整性约束；</p>
+<p>2.准确性</p>
+<p>准确性是指数据中记录的信息和数据是否准确，是否存在异常或者错误信息。比如一笔订单如果出现确认收货金额为负值，或者下单时见在公司成立之前，或者订单没有买家信息，这些必然都是有问题的。如何确保记录的准确性，也是保障数据质量必不可少的一个原则；</p>
+<p>3.一致性</p>
+<p>一致性一般体现在跨度很大的数据仓库体系中，笔哦入阿里巴巴数据仓库，内部有很多业务数据仓库分支，对于同一份数据，必须保证一致性。例如用户ID，从在线业务库加工到数据仓库，再到各个消费节点，必须都是同一种类型，长度也是需要保持一致。所以，在假设阿里巴巴数据仓库时，才有了公共层的加工，以确保数据的一致性；</p>
+<p>4.及时性</p>
+<p>在确保数据的完整性、准确性和一致性后，接下来就是要保障数据能够及时产出，这样才能体现数据的价值。一般决策支持分析都希望当天就能看到前一天的数据，而不是等三五天才看到某一天的数据分析结果。否则就已经失去了数据及时性的价值，分析工作变得毫无意义。现在对时间要求更高了，越来越多的应用都希望数据是小时级别或者实时级别的。比如阿里巴巴“双11”的交易大屏数据，就做到了秒级，及时性同样是保障数据质量的一个重要原则；</p>
+<h3 id="15-2-数据质量方法概述"><a href="#15-2-数据质量方法概述" class="headerlink" title="15.2 数据质量方法概述"></a>15.2 数据质量方法概述</h3><p>在阿里巴巴数据仓库建设过程中，经过不断的实践，慢慢摸索出一套适合大数据数据质量的方法，在满足以上四个原则的基础上，为阿里巴巴数据做基础保障。阿里业务复杂，种类繁多的产品每天产生数亿计的数据，每天的数据量都在PB级别之上，而数据消费端的应用有层出不穷，各类数据产品如雨后春笋般出现，为了不断满足这些数据应用的需求，数据仓库的规模在不断膨胀，同时数据质量的保障越来越复杂。基于这些背景，我们提出了一套数据质量建设方法；</p>
+<p>消费场景知晓</p>
+<p>消费场景知晓部分主要通过数据资产等级和基于元数据的应用链路分析解决消费场景知晓的问题。根据应用的影响程度，确定了资产等级；</p>
+<p>根据数据链路血缘，将资产等级上推至各数据生产加工的各个环节，确定连路上所涉及的数据的资产等级和在各加工环节上根据资产等级的不同采取的不同处理方式；</p>
+<p>数据生产加工各个环节卡点校验</p>
+<p>数据生产加工各个环节卡点校验部分主要包括在线和离线系统数据生产加工各个环节的卡点校验。其中在线系统指OLTP（On-Line Transaction Processing，联机事务处理）系统，离线系统指OLAP（On-Line Analytical Processing,联机分析处理）系统。</p>
+<p>在线系统生产加工各环节卡点校验包括两个方面：根据资产等级的不同，当对应的业务系统变更时，决定是否将变更通知下游；对于高资产等级的业务，当出现新业务数据时，是否纳入统计中，需要卡点审批；    </p>
+<p>离线业务生产加工各环节卡点校验主要是包括代码开发、测试、发布和历史或错误数据回刷等环节的卡点校验，针对数据资产等级的不同，对校验的要求有所不同；</p>
+<p>风险点监控</p>
+<p>风险点监控部分主要是针对在数据日常运行过程中，可能出现的数据质量和时效等问题进行监控，包括在线数据和离线数据的风险点监控两个方面。</p>
+<p>在线数据的风险点监控主要是针对在线系统日常运行产出的数据进行业务规则的校验，以保证数据质量，其中主要使用实时业务检测平台BCP（Biz Check Platform）；</p>
+<p>离线数据的风险点监控主要是针对离线系统日常运行产出的数据进行数据质量监控和时效性监控，其中数据质量监控主要使用DQC，时效性监控主要使用摩萨德；</p>
+<p>质量衡量</p>
+<p>对质量的衡量既有事前的衡量，如DQC覆盖率；又有事后的衡量，主要用于跟进质量问题，确定质量问题的原因、责任人、解决情况等，并用于数据质量的复盘，避免类似事件再次发生；</p>
+<p>根据质量问题对不同等级资产的影响程度，确定其实属于低影响的事件还是具有较大影响的故障。质量分则是综合事前和事后的衡量数据进行打分；</p>
+<p>质量配套工具</p>
+<p>针对数据质量的各个方面，都有相关的工具进行保证，以提高效能；</p>
+<h4 id="15-2-1-消费场景知晓"><a href="#15-2-1-消费场景知晓" class="headerlink" title="15.2.1 消费场景知晓"></a>15.2.1 消费场景知晓</h4><p>在数据快速增长的情况下，数据类产品和日常决策支持系统也应运而生，且层出不穷，而对于数据不断增加的需求，阿里内部提出了数据资产等级的方案，旨在解决消费场景知晓的问题；</p>
+<p>1.数据资产等级定义（我们使用Asset缩写进行标记, A1 &gt;  A2 &gt; A3 &gt; A4 &gt; Ax）</p>
+<p>毁灭性质 A1：数据一旦出错，将会引起重大资产损失，面临收益损失，造成重大公关风险；</p>
+<p>全剧性质 A2：数据直接或者间接用于集团级别业务和效果的评估、重要平台的运维、对外数据产品的透露、影响用户在阿里系网站的行为等；</p>
+<p>局部性质 A3：数据直接或间接用于内部一般数据产品或者运营&#x2F;产品报告，如果出现问题会给事业部或业务线造成影响，或者工作效率损失；</p>
+<p>一般性质 A4：数据主要用于小儿的日常数据分析，出现问题机会不会带来影响或者带阿里影响极小；</p>
+<p>未知性质 Ax：不能明确说出数据应用场景，则标注为未知；</p>
+<p>2.数据资产等级落地方法</p>
+<p>数据是从业务系统中产出的，经过同步工具进入数据仓库系统中，在数据仓库中进行一般意义上的清洗、加工、整合、算法、模型等一些列运算后，再通过同步工具输出到数据产品中进行消费。</p>
+<p><img src="https://raw.githubusercontent.com/lxorc/images/master/img/Pasted%20image%2020230615152307.png" alt="Pasted image 20230615152307"></p>
+<p>同步到数据仓库（对应阿里巴巴就是MaxCompute平台）中的都是业务数据库的原始表，这些表主要用于承载业务需求，往往不能直接用在数据产品，在数据产品使用中使用的都是经过数据仓库加工后的产出表；</p>
+<h4 id="15-2-2-数据加工过程卡点校验"><a href="#15-2-2-数据加工过程卡点校验" class="headerlink" title="15.2.2 数据加工过程卡点校验"></a>15.2.2 数据加工过程卡点校验</h4><p>1.在线卡点校验；</p>
+<p>工具捕捉；</p>
+<p>人员主动进行业务变更通知；</p>
+<p>2.离线卡点校验；</p>
+<p>SQLSCAN；</p>
+<p>DataX;</p>
+<h4 id="15-2-3-风险点监控"><a href="#15-2-3-风险点监控" class="headerlink" title="15.2.3 风险点监控"></a>15.2.3 风险点监控</h4><p>风险点监控主要是针对数据在日常运行过程中容易出现的风险进行监控并设置报警机制，主要包括在线数据和离线数据运行风险点监控；</p>
+<ol>
+<li>在线数据风险点监控</li>
+</ol>
+<p>实时业务监测平台BCP</p>
+<p>BCP针对数据库表的记录进行规则校验。在每一个业务系统中，当完成业务过程进行数据落库时，BCP同时订阅一份相同的数据，在BCP系统中进行逻辑校验，当校验不通过时，已报警形式披露出来给规则订阅人，以完成数据的校对。</p>
+<p>采用BCP进行校验的过程是，首先在BCP平台进行数据源订阅，然后针对所订阅的数据源进行规则编写，最后配置告警；</p>
+<ol start="2">
+<li>离线数据风险点监控</li>
+</ol>
+<p>离线数据风险点主要包括数据准确性和数据产出及时性的监控；</p>
+<ol>
+<li>数据准确性：使用DQC来保障数据的准确性（运行SQL任务，用户自定义规则）；</li>
+<li>数据及时性：任务优先级（调度平台是一个树形结构）；</li>
+</ol>
+<p>任务报警（阿里使用自主研发的摩萨德来监控任务的实时运行状况）；</p>
+<p>摩萨德（离线任务的监控报警系统，会根据离线任务的运行情况实时决策是否告警、何时告警、告警方式、告警给谁等）</p>
+<p>强保障监控主要包含：</p>
+<ul>
+<li>监控范围（设置了强保障业务任务以及其上所有的任务都被监控）；</li>
+<li>监控的异常（任务出错、任务变慢、预警业务延迟）</li>
+<li>告警对象（默认是Owner，也可以自定义配置）；</li>
+<li>何时告警（根据业务设置的预警时间判断）；</li>
+<li>告警的方式（根据任务的重要紧急程度，支持电话、短信、旺旺、邮件告警）；</li>
+</ul>
+<h4 id="15-2-4-质量衡量"><a href="#15-2-4-质量衡量" class="headerlink" title="15.2.4 质量衡量"></a>15.2.4 质量衡量</h4><p>数据质量起夜率（数据产品或者管理层决策日报一般要求是上午9:00之前提供，数据仓库的作业任务都是在凌晨运行的，一般数据出现问题就需要开发人员起夜进行处理，起夜率将是衡量数据质量建设完善的一个关键指标）；</p>
+<p>数据质量事件<br>数据质量故障体系；</p>
+<ul>
+<li>故障定义</li>
+<li>故障等级</li>
+<li>故障处理</li>
+<li>故障Review</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://example.com">kami</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2023/06/15/%E3%80%8A%E5%A4%A7%E6%95%B0%E6%8D%AE%E4%B9%8B%E8%B7%AF%EF%BC%9A%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AE%9E%E8%B7%B5%E3%80%8B%E7%AC%AC%E4%B8%89%E7%AF%87%20%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86%E7%AF%87-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">http://example.com/2023/06/15/%E3%80%8A%E5%A4%A7%E6%95%B0%E6%8D%AE%E4%B9%8B%E8%B7%AF%EF%BC%9A%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AE%9E%E8%B7%B5%E3%80%8B%E7%AC%AC%E4%B8%89%E7%AF%87%20%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86%E7%AF%87-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">kami's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2023/06/13/%E3%80%8A%E5%A4%A7%E6%95%B0%E6%8D%AE%E4%B9%8B%E8%B7%AF%EF%BC%9A%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AE%9E%E8%B7%B5%E3%80%8B%E7%AC%AC%E4%BA%8C%E7%AF%87%20%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E7%AF%87-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" title="《大数据之路：阿里巴巴大数据实践》第二篇 数据模型篇-读书笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">《大数据之路：阿里巴巴大数据实践》第二篇 数据模型篇-读书笔记</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">kami</div><div class="author-info__description">做时间的朋友</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">4</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86%E7%AF%87"><span class="toc-number">1.</span> <span class="toc-text">三、数据管理篇</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E5%85%83%E6%95%B0%E6%8D%AE"><span class="toc-number">1.1.</span> <span class="toc-text">12.元数据</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#12-1-%E5%85%83%E6%95%B0%E6%8D%AE%E6%A6%82%E5%BF%B5"><span class="toc-number">1.1.1.</span> <span class="toc-text">12.1 元数据概念</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#12-1-1-%E5%85%83%E6%95%B0%E6%8D%AE%E5%AE%9A%E4%B9%89"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">12.1.1 元数据定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#12-1-2-%E5%85%83%E6%95%B0%E6%8D%AE%E4%BB%B7%E5%80%BC"><span class="toc-number">1.1.1.2.</span> <span class="toc-text">12.1.2  元数据价值</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#12-1-3-%E7%BB%9F%E4%B8%80%E5%85%83%E6%95%B0%E6%8D%AE%E4%BD%93%E7%B3%BB%E5%BB%BA%E8%AE%BE"><span class="toc-number">1.1.1.3.</span> <span class="toc-text">12.1.3 统一元数据体系建设</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-2-%E5%85%83%E6%95%B0%E6%8D%AE%E5%BA%94%E7%94%A8"><span class="toc-number">1.1.2.</span> <span class="toc-text">12.2 元数据应用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#12-2-1-Data-Profile"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">12.2.1 Data Profile</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#12-2-2-%E5%85%83%E6%95%B0%E6%8D%AE%E9%97%A8%E6%88%B7"><span class="toc-number">1.1.2.2.</span> <span class="toc-text">12.2.2 元数据门户</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#12-2-3-%E5%BA%94%E7%94%A8%E9%93%BE%E8%B7%AF%E5%88%86%E6%9E%90"><span class="toc-number">1.1.2.3.</span> <span class="toc-text">12.2.3 应用链路分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#12-2-4-%E6%95%B0%E6%8D%AE%E5%BB%BA%E6%A8%A1"><span class="toc-number">1.1.2.4.</span> <span class="toc-text">12.2.4 数据建模</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#12-2-5-%E9%A9%B1%E5%8A%A8ETL%E5%BC%80%E5%8F%91"><span class="toc-number">1.1.2.5.</span> <span class="toc-text">12.2.5 驱动ETL开发</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-%E8%AE%A1%E7%AE%97%E7%AE%A1%E7%90%86"><span class="toc-number">1.2.</span> <span class="toc-text">13.计算管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#13-1-%E7%B3%BB%E7%BB%9F%E4%BC%98%E5%8C%96"><span class="toc-number">1.2.1.</span> <span class="toc-text">13.1 系统优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-2-%E4%BB%BB%E5%8A%A1%E4%BC%98%E5%8C%96"><span class="toc-number">1.2.2.</span> <span class="toc-text">13.2 任务优化</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#13-2-1-Map%E5%80%BE%E6%96%9C"><span class="toc-number">1.2.2.1.</span> <span class="toc-text">13.2.1 Map倾斜</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#13-2-2-Join%E5%80%BE%E6%96%9C"><span class="toc-number">1.2.2.2.</span> <span class="toc-text">13.2.2 Join倾斜</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#13-2-3-Reduce%E5%80%BE%E6%96%9C"><span class="toc-number">1.2.2.3.</span> <span class="toc-text">13.2.3 Reduce倾斜</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-%E5%AD%98%E5%82%A8%E6%88%90%E6%9C%AC%E7%AE%A1%E7%90%86"><span class="toc-number">1.3.</span> <span class="toc-text">14.存储成本管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#14-1-%E6%95%B0%E6%8D%AE%E5%8E%8B%E7%BC%A9"><span class="toc-number">1.3.1.</span> <span class="toc-text">14.1 数据压缩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-2-%E6%95%B0%E6%8D%AE%E9%87%8D%E5%88%86%E5%B8%83"><span class="toc-number">1.3.2.</span> <span class="toc-text">14.2 数据重分布</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-3-%E5%AD%98%E5%82%A8%E6%B2%BB%E7%90%86%E9%A1%B9%E4%BC%98%E5%8C%96"><span class="toc-number">1.3.3.</span> <span class="toc-text">14.3 存储治理项优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-4-%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E7%AE%A1%E7%90%86"><span class="toc-number">1.3.4.</span> <span class="toc-text">14.4 生命周期管理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#14-4-1-%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E7%AE%A1%E7%90%86%E7%AD%96%E7%95%A5"><span class="toc-number">1.3.4.1.</span> <span class="toc-text">14.4.1 生命周期管理策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#14-4-2-%E9%80%9A%E7%94%A8%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E7%AE%A1%E7%90%86%E7%9F%A9%E9%98%B5"><span class="toc-number">1.3.4.2.</span> <span class="toc-text">14.4.2 通用的生命周期管理矩阵</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-5-%E6%95%B0%E6%8D%AE%E6%88%90%E6%9C%AC%E8%AE%A1%E9%87%8F"><span class="toc-number">1.3.5.</span> <span class="toc-text">14.5 数据成本计量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-6-%E6%95%B0%E6%8D%AE%E4%BD%BF%E7%94%A8%E8%AE%A1%E8%B4%B9"><span class="toc-number">1.3.6.</span> <span class="toc-text">14.6 数据使用计费</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-%E6%95%B0%E6%8D%AE%E8%B4%A8%E9%87%8F"><span class="toc-number">1.4.</span> <span class="toc-text">15.数据质量</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#15-1-%E6%95%B0%E6%8D%AE%E8%B4%A8%E9%87%8F%E4%BF%9D%E9%9A%9C%E5%8E%9F%E5%88%99"><span class="toc-number">1.4.1.</span> <span class="toc-text">15.1 数据质量保障原则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-2-%E6%95%B0%E6%8D%AE%E8%B4%A8%E9%87%8F%E6%96%B9%E6%B3%95%E6%A6%82%E8%BF%B0"><span class="toc-number">1.4.2.</span> <span class="toc-text">15.2 数据质量方法概述</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#15-2-1-%E6%B6%88%E8%B4%B9%E5%9C%BA%E6%99%AF%E7%9F%A5%E6%99%93"><span class="toc-number">1.4.2.1.</span> <span class="toc-text">15.2.1 消费场景知晓</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#15-2-2-%E6%95%B0%E6%8D%AE%E5%8A%A0%E5%B7%A5%E8%BF%87%E7%A8%8B%E5%8D%A1%E7%82%B9%E6%A0%A1%E9%AA%8C"><span class="toc-number">1.4.2.2.</span> <span class="toc-text">15.2.2 数据加工过程卡点校验</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#15-2-3-%E9%A3%8E%E9%99%A9%E7%82%B9%E7%9B%91%E6%8E%A7"><span class="toc-number">1.4.2.3.</span> <span class="toc-text">15.2.3 风险点监控</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#15-2-4-%E8%B4%A8%E9%87%8F%E8%A1%A1%E9%87%8F"><span class="toc-number">1.4.2.4.</span> <span class="toc-text">15.2.4 质量衡量</span></a></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/06/15/%E3%80%8A%E5%A4%A7%E6%95%B0%E6%8D%AE%E4%B9%8B%E8%B7%AF%EF%BC%9A%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AE%9E%E8%B7%B5%E3%80%8B%E7%AC%AC%E4%B8%89%E7%AF%87%20%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86%E7%AF%87-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" title="《大数据之路：阿里巴巴大数据实践》第三篇 数据管理篇-读书笔记">《大数据之路：阿里巴巴大数据实践》第三篇 数据管理篇-读书笔记</a><time datetime="2023-06-15T07:18:00.000Z" title="发表于 2023-06-15 15:18:00">2023-06-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/06/13/%E3%80%8A%E5%A4%A7%E6%95%B0%E6%8D%AE%E4%B9%8B%E8%B7%AF%EF%BC%9A%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AE%9E%E8%B7%B5%E3%80%8B%E7%AC%AC%E4%BA%8C%E7%AF%87%20%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E7%AF%87-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" title="《大数据之路：阿里巴巴大数据实践》第二篇 数据模型篇-读书笔记">《大数据之路：阿里巴巴大数据实践》第二篇 数据模型篇-读书笔记</a><time datetime="2023-06-13T06:44:00.000Z" title="发表于 2023-06-13 14:44:00">2023-06-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/06/08/%E3%80%8A%E5%A4%A7%E6%95%B0%E6%8D%AE%E4%B9%8B%E8%B7%AF%EF%BC%9A%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AE%9E%E8%B7%B5%E3%80%8B%E7%AC%AC%E4%B8%80%E7%AF%87%20%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF%E7%AF%87-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" title="《大数据之路：阿里巴巴大数据实践》第一篇 数据技术篇-读书笔记">《大数据之路：阿里巴巴大数据实践》第一篇 数据技术篇-读书笔记</a><time datetime="2023-06-08T11:46:00.000Z" title="发表于 2023-06-08 19:46:00">2023-06-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/04/04/%E3%80%8A%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%8F%B0%E5%AE%9E%E6%88%98%E8%AF%BE%E3%80%8B%E5%8E%9F%E7%90%86%E7%AF%87-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="《数据中台实战课》原理篇-学习笔记">《数据中台实战课》原理篇-学习笔记</a><time datetime="2023-04-03T17:32:00.000Z" title="发表于 2023-04-04 01:32:00">2023-04-04</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By kami</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
