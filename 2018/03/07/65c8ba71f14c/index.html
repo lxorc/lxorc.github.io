@@ -1,0 +1,195 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><title>Linux - 基础 - 理解 iowait | kami's blog</title><meta name="author" content="kami"><meta name="copyright" content="kami"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="%iowait 是 sar -u 等工具检查CPU使用率时显示的一个指标，在Linux上显示为 %iowait，在有的Unix版本上显示为 %wio，含义都是一样的。 09:35:06 AM     CPU     %user     %nice   %system   %iowait    %steal     %idle09:35:07 AM     all      0.00      0.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux - 基础 - 理解 iowait">
+<meta property="og:url" content="http://lxorc.github.io/2018/03/07/65c8ba71f14c/index.html">
+<meta property="og:site_name" content="kami&#39;s blog">
+<meta property="og:description" content="%iowait 是 sar -u 等工具检查CPU使用率时显示的一个指标，在Linux上显示为 %iowait，在有的Unix版本上显示为 %wio，含义都是一样的。 09:35:06 AM     CPU     %user     %nice   %system   %iowait    %steal     %idle09:35:07 AM     all      0.00      0.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://lxorc.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2018-03-07T02:34:00.000Z">
+<meta property="article:modified_time" content="2018-03-07T02:34:00.000Z">
+<meta property="article:author" content="kami">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lxorc.github.io/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://lxorc.github.io/2018/03/07/65c8ba71f14c/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Linux - 基础 - 理解 iowait',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  postUpdate: '2018-03-07 10:34:00'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">16</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://images.unsplash.com/photo-1472457897821-70d3819a0e24?ixlib=rb-4.0.3&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=2069&amp;q=80')"><nav id="nav"><span id="blog-info"><a href="/" title="kami's blog"><span class="site-name">kami's blog</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Linux - 基础 - 理解 iowait</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2018-03-07T02:34:00.000Z" title="发表于 2018-03-07 10:34:00">2018-03-07</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2018-03-07T02:34:00.000Z" title="更新于 2018-03-07 10:34:00">2018-03-07</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Linux - 基础 - 理解 iowait"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p><code>%iowait</code> 是 <code>sar -u</code> 等工具检查CPU使用率时显示的一个指标，在Linux上显示为 <code>%iowait</code>，在有的Unix版本上显示为 <code>%wio</code>，含义都是一样的。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">09:35:06 AM     CPU     %user     %nice   %system   %iowait    %steal     %idle</span><br><span class="line">09:35:07 AM     all      0.00      0.00      0.00      0.00      0.00    100.00</span><br><span class="line">09:35:08 AM     all      0.51      0.00      2.53     13.13      0.00     83.84</span><br><span class="line">09:35:09 AM     all      1.54      0.00      7.69     39.49      0.00     51.28</span><br><span class="line">09:35:10 AM     all      2.04      0.00      9.18     39.80      0.00     48.98</span><br><span class="line">09:35:11 AM     all      1.02      0.00      7.65     40.31      0.00     51.02</span><br></pre></td></tr></table></figure>
+
+
+<p>这个指标常常被误读，<mark style="background: #FF5582A6;">很多人把它当作I&#x2F;O问题的征兆。事实上这个指标所含的信息量非常少，不能单独用来判断系统有没有I&#x2F;O问题。</mark></p>
+<p>我们详细探讨一下它真正的含义，先从man page上的解释开始：</p>
+<p><strong>Linux man page</strong></p>
+<blockquote>
+</blockquote>
+<p>%iowait<br>Percentage of time that the CPU or CPUs were idle during<br>which the system had an outstanding disk I&#x2F;O request.</p>
+<p><strong>HP-UX man page</strong></p>
+<blockquote>
+</blockquote>
+<p>%wio<br>idle with some process waiting for I&#x2F;O (only block I&#x2F;O, raw<br>I&#x2F;O, or VM pageins&#x2F;swapins indicated).</p>
+<p>Linux和HP-UX的man page分别从两个角度描述了这个指标：<mark style="background: #FF5582A6;">Linux着眼于I&#x2F;O，强调的是仍有未完成的I&#x2F;O请求；而HP-UX着眼于进程，强调的是仍有进程在等待I&#x2F;O</mark>。</p>
+<p>二者所说的是同一件事的两个方面，合在一起就完整了，就是：<mark style="background: #FF5582A6;">至少有一个I&#x2F;O请求尚未完成，有进程因为等待它而休眠。</mark></p>
+<p>我们不妨采纳Linux的措辞，%iowait 表示在一个采样周期内有百分之几的时间属于以下情况：CPU空闲、并且有仍未完成的I&#x2F;O请求。</p>
+<p>对 %iowait 常见的<mark style="background: #FF5582A6;">误解</mark>有两个：</p>
+<p>一是误以为 %iowait 表示CPU不能工作的时间，<br>二是误以为<mark style="background: #FF5582A6;"> %iowait 表示I&#x2F;O有瓶颈。</mark></p>
+<p>第一种误解太低级了，%iowait 的首要条件就是CPU空闲，既然空闲当然就可以接受运行任务，只是因为没有可运行的进程，CPU才进入空闲状态的。那为什么没有可运行的进程呢？因为进程都处于休眠状态、在等待某个特定事件：比如等待定时器、或者来自网络的数据、或者键盘输入、或者等待I&#x2F;O操作完成，等等。</p>
+<p>第二种误解更常见，为什么人们会认为 %iowait 偏高是有I&#x2F;O瓶颈的迹象呢？他们的理由是:</p>
+<blockquote>
+<p>%iowait  的第一个条件是CPU空闲，意即所有的进程都在休眠，第二个条件是仍有未完成的I&#x2F;O请求，意味着进程休眠的原因是等待I&#x2F;O，而 %iowait 升高则表明因等待I&#x2F;O而休眠的进程数量更多了、或者进程因等待I&#x2F;O而休眠的时间更长了。</p>
+</blockquote>
+<p>听上去似乎很有道理，但是不对：<br><mark style="background: #FF5582A6;">首先 %iowait 升高并不能证明等待I&#x2F;O的进程数量增多了，也不能证明等待I&#x2F;O的总时间增加了</mark>。为什么呢？看看下面两张图就明白了。</p>
+<p><img src="https://raw.githubusercontent.com/lxorc/images/master/img/Pasted%20image%2020230704231830.png" alt="Pasted image 20230704231830"></p>
+<p>第一张图演示的是，在I&#x2F;O完全一样的情况下，CPU忙闲状态的变化就能够影响 <code>%iowait</code> 的大小。下图我们看到，在CPU繁忙期间发生的I&#x2F;O，无论有多少，<code>%iowait</code> 的值都是不受影响的（因为 <code>%iowait</code> 的第一个前提条件就是CPU必须空闲）；</p>
+<p>当CPU繁忙程度下降时，有一部分I&#x2F;O落入了CPU空闲的时间段内，这就导致了 <code>%iowait</code> 升高。可见，I&#x2F;O并没有变化，<code>%iowait</code> 却升高了，原因仅仅是CPU的空闲时间增加了。请记住，系统中有成百上千的进程数，任何一个进程都可以引起CPU和I&#x2F;O的变化，因为 <code>%iowait、%idle、%user、%system</code> 等这些指标都是全局性的，并不是特指某个进程。</p>
+<p><img src="https://raw.githubusercontent.com/lxorc/images/master/img/Pasted%20image%2020230704231843.png" alt="Pasted image 20230704231843"></p>
+<p>再往下看第二张图，它描述了另一种情形：假设CPU的繁忙状况保持不变的条件下，即使 <code>%iowait </code>升高也不能说明I&#x2F;O负载加重了。<br>如果2个I&#x2F;O请求<mark style="background: #FFB86CA6;">依次提交</mark>、使得整个时段内始终有I&#x2F;O在进行，那么 <code>%iowait</code> 是100%；<br>如果3个I&#x2F;O请求<mark style="background: #FFB86CA6;">同时提交</mark>，因为系统有能力同时处理多个I&#x2F;O，所以3个并发的I&#x2F;O从开始到结束的时间与一个I&#x2F;O一样，<code>%iowait</code> 的结果只有50%。<br>2个I&#x2F;O使 <code>%iowait</code> 达到了100%，3个I&#x2F;O的 <code>%iowait </code>却只有50%，显然 <code>%iowait</code> 的高低与I&#x2F;O的多少没有必然关系，而是与I&#x2F;O的并发度相关。所以，仅凭 <code>%iowait</code> 的上升不能得出I&#x2F;O负载增加 的结论。</p>
+<p>这就是为什么说 <code>%iowait</code> 所含的信息量非常少的原因，<mark style="background: #FFB86CA6;">它是一个非常模糊的指标，如果看到 <code>%iowait</code> 升高，还需检查I&#x2F;O量有没有明显增加，<code>avserv/avwait/avque</code>等指标有没有明显增大</mark>，应用有没有感觉变慢，如果都没有，就没什么好担心的。
+ </p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://lxorc.github.io">kami</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://lxorc.github.io/2018/03/07/65c8ba71f14c/">http://lxorc.github.io/2018/03/07/65c8ba71f14c/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://lxorc.github.io" target="_blank">kami's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2018/03/29/1a380be0abf4/" title="处理 bad interpreter No such file or directory"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">处理 bad interpreter No such file or directory</div></div></a></div><div class="next-post pull-right"><a href="/2018/03/02/0fd0865a8b23/" title="ubuntu16.04搭建elasticsearch6集群"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">ubuntu16.04搭建elasticsearch6集群</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">kami</div><div class="author-info__description">做时间的朋友</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">16</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/03/ae3c2245774f/" title="大数据 - 数据治理 - 03 - 主数据管理">大数据 - 数据治理 - 03 - 主数据管理</a><time datetime="2023-07-03T11:54:00.000Z" title="发表于 2023-07-03 19:54:00">2023-07-03</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/01/37328435cdb4/" title="Nacos - 整合 Spring cloud 服务发现和配置中心">Nacos - 整合 Spring cloud 服务发现和配置中心</a><time datetime="2023-07-01T15:39:00.000Z" title="发表于 2023-07-01 23:39:00">2023-07-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/06/30/a755329a169d/" title="大数据 - 数据治理 - 02 - 元数据治理">大数据 - 数据治理 - 02 - 元数据治理</a><time datetime="2023-06-30T03:12:00.000Z" title="发表于 2023-06-30 11:12:00">2023-06-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/06/28/3d6335784ea8/" title="浅尝 idea spring boot + EasyCode">浅尝 idea spring boot + EasyCode</a><time datetime="2023-06-28T09:04:00.000Z" title="发表于 2023-06-28 17:04:00">2023-06-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/06/26/25a0267f6e36/" title="大数据 - 数据治理 - 01 - 概述">大数据 - 数据治理 - 01 - 概述</a><time datetime="2023-06-26T03:57:00.000Z" title="发表于 2023-06-26 11:57:00">2023-06-26</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By kami</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
